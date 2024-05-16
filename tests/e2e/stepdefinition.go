@@ -87,7 +87,6 @@ func (s *StepDefinitions) iAddTheNumbers() error {
 	if s.bag == nil {
 		s.T.Fatal("bag is nil")
 	}
-	// Perform the addition operation
 	s.bag.res = calculator.Add(s.bag.inp1, s.bag.inp2)
 	return nil
 }
@@ -96,7 +95,6 @@ func (s *StepDefinitions) iSubtractTheNumbers() error {
 	if s.bag == nil {
 		s.T.Fatal("bag is nil")
 	}
-	// Perform the subtraction operation
 	s.bag.res = calculator.Subtract(s.bag.inp1, s.bag.inp2)
 	return nil
 }
@@ -105,7 +103,6 @@ func (s *StepDefinitions) iMultiplyTheNumbers() error {
 	if s.bag == nil {
 		s.T.Fatal("bag is nil")
 	}
-	// Perform the multiplication operation
 	s.bag.res = calculator.Multiply(s.bag.inp1, s.bag.inp2)
 	return nil
 }
@@ -114,7 +111,6 @@ func (s *StepDefinitions) iDivideTheNumbers() error {
 	if s.bag == nil {
 		s.T.Fatal("bag is nil")
 	}
-	// Perform the division operation
 	s.bag.res, s.bag.err = calculator.Divide(s.bag.inp1, s.bag.inp2)
 	return nil
 }
