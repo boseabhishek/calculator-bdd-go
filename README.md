@@ -4,7 +4,8 @@
 
 - **Feature** files are just a way of organising scenarios, gives you file/proj org capability. It doesn't any way dictate the run or sequence etc.
 
-- **Background** is invoked first. They are same as scenarios.
+- **Background** is invoked first. Has to be the first one too (before any Scenario is defined).
+They are similar to scenarios.
   
 - **Scenarios** matters the most!
   - For example:
