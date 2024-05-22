@@ -12,6 +12,7 @@ import (
 
 type StepDefinitions struct {
 	*testing.T
+	cal *calculator.Calculator
 	bag *bag
 }
 
@@ -19,6 +20,7 @@ func NewStepDefinitions(t *testing.T) *StepDefinitions {
 	return &StepDefinitions{
 		T:   t,
 		bag: nil,
+		cal: nil,
 	}
 }
 
@@ -36,14 +38,17 @@ func (s *StepDefinitions) InitializeTestSuite(ctx *godog.TestSuiteContext) {
 func (s *StepDefinitions) InitializeScenario(ctx *godog.ScenarioContext) {
 	fmt.Println("[LOG] entering InitializeScenario...")
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
-		// setting a new bag, before every scenario
+		// setting a new bag to hold input/output data, before every scenario
 		s.bag = newbag()
 		return ctx, nil
 	})
 
 	ctx.After(func(ctx context.Context, sc *godog.Scenario, err error) (context.Context, error) {
-		// resetting the bag, before every scenario
+		// resetting the cal and bag, before every scenario
 		s.bag = nil
+		s.cal = nil 
+		// So basically, we would have set the cal in ctx.Before() above (like bag) and reset here
+		// but, in a more complex scenario, weher diff tasks need to be done as bg, thsi would help more!
 		return ctx, nil
 	})
 
@@ -54,6 +59,7 @@ func (s *StepDefinitions) InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^I multiply the numbers$`, s.iMultiplyTheNumbers)
 	ctx.Step(`^I divide the numbers$`, s.iDivideTheNumbers)
 	ctx.Step(`^the result should be (\d+)$`, s.theResultShouldBe)
+	ctx.Step(`^I set up the calculator$`, s.iSetUpTheCalculator)
 
 	fmt.Println("[LOG] leaving InitializeScenario...")
 }
@@ -87,7 +93,7 @@ func (s *StepDefinitions) iAddTheNumbers() error {
 	if s.bag == nil {
 		s.T.Fatal("bag is nil")
 	}
-	s.bag.res = calculator.Add(s.bag.inp1, s.bag.inp2)
+	s.bag.res = s.cal.Add(s.bag.inp1, s.bag.inp2)
 	return nil
 }
 
@@ -95,7 +101,7 @@ func (s *StepDefinitions) iSubtractTheNumbers() error {
 	if s.bag == nil {
 		s.T.Fatal("bag is nil")
 	}
-	s.bag.res = calculator.Subtract(s.bag.inp1, s.bag.inp2)
+	s.bag.res = s.cal.Subtract(s.bag.inp1, s.bag.inp2)
 	return nil
 }
 
@@ -103,7 +109,7 @@ func (s *StepDefinitions) iMultiplyTheNumbers() error {
 	if s.bag == nil {
 		s.T.Fatal("bag is nil")
 	}
-	s.bag.res = calculator.Multiply(s.bag.inp1, s.bag.inp2)
+	s.bag.res = s.cal.Multiply(s.bag.inp1, s.bag.inp2)
 	return nil
 }
 
@@ -111,7 +117,7 @@ func (s *StepDefinitions) iDivideTheNumbers() error {
 	if s.bag == nil {
 		s.T.Fatal("bag is nil")
 	}
-	s.bag.res, s.bag.err = calculator.Divide(s.bag.inp1, s.bag.inp2)
+	s.bag.res, s.bag.err = s.cal.Divide(s.bag.inp1, s.bag.inp2)
 	return nil
 }
 
@@ -122,5 +128,13 @@ func (s *StepDefinitions) theResultShouldBe(arg int) error {
 	if s.bag.res != arg {
 		return fmt.Errorf("expected %d but got %d", arg, s.bag.res)
 	}
+	return nil
+}
+
+func (s *StepDefinitions) iSetUpTheCalculator() error {
+	if s.cal != nil {
+		s.T.Fatal("cal is already set")
+	}
+	s.cal = calculator.New()
 	return nil
 }
